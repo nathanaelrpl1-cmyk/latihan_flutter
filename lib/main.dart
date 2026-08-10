@@ -45,4 +45,11 @@ void main() {
 // cara ini hanya cukup menulis satu blok perulangan saja. Bayangkan jika nantinya koperasi memiliki ratusan jenis
 // barang, jadi tidak perlu repot mengetik ratusan baris kode baru, karena perulangan akan otomatis mendata 
 // dan mencetak seluruh isi daftar tersebut secara cepat tanpa ada satupun yang terlewat.
-
+// --------------------------------------------------------------------------------------------------------
+// Apa keuntungan memodelkan barang sebagai objek bagi pengembangan sistem 
+// koperasi ke depan?
+// Memodelkan barang sebagai objek membuat sistem jauh lebih mudah dikembangkan. Jika di suatu saat 
+// koperasi ingin menambahkan detail baru (misalnya atribut "tanggal kedaluwarsa", "kategori", 
+// atau method "cek kelayakan"), kita hanya perlu menambahkannya di dalam struktur 
+// Kelas 'Barang' satu kali saja tanpa harus membongkar dan merombak seluruh 
+// logika transaksi di program utama.
