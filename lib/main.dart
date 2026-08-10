@@ -1,58 +1,38 @@
 import 'package:intl/intl.dart';
+class Barang {
+  String nama;
+  double harga;
+  int stok;
 
-double hitungTotal(int jumlah, double harga) {
-  return jumlah * harga;
-}
+  Barang ({
+    required this.nama,
+    required this.harga,
+    required this.stok,
+  });
 
-double hitungDiskon(double total, double persenpotongan) {
-  return total * persenpotongan / 100;
+  void Tampilkan() {
+    final formatRupiah = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp',
+      decimalDigits: 2,
+    );
+
+    print('=== BARANG KOPERASI ===');
+    print('Nama Barang: $nama');
+    print('harga: ${formatRupiah.format(harga)}');
+    print('Stok: $stok');
+    print('=======================');
+  }
 }
 
 void main() {
-  final formatRupiah = NumberFormat.currency(
-    locale: 'id_ID',
-    symbol: 'Rp',
-    decimalDigits: 2,
-  );
+  print('==== DAFTAR BARANG KOPERASI ====');
 
-  print("=== TRANSAKSI KOPERASI ===");
-  String namaBarang = "Buku Tulis";
-  int jumlahBeli = 85;
-  double hargaSatuan = 3000.0;
+  Barang bukutulis = Barang(nama: 'Buku Tulis', harga: 3000.0, stok: 100);
+  Barang pensil = Barang(nama: 'Pensil', harga: 1500.0, stok: 50);
+  Barang penghapus = Barang(nama: 'Penghapus', harga: 1000.0, stok: 30);
 
-  double totalBelanja = hitungTotal(jumlahBeli, hargaSatuan);
-
-  double persenPotongan = 0.0;
-  String keteranganPotongan = "0%";
-
-  if (totalBelanja > 500000) {
-    persenPotongan = 15.0;
-    keteranganPotongan = "15%";
-  } else if (totalBelanja > 200000) {
-    persenPotongan = 10.0;
-    keteranganPotongan = "10%";
-  } else if (totalBelanja > 100000) {
-    persenPotongan = 5.0;
-    keteranganPotongan = "5%";
-  } else {
-    persenPotongan = 0.0;
-    keteranganPotongan = "0%";
-  }
-
-  double Diskon = hitungDiskon(totalBelanja, persenPotongan);
-  double hargaAkhir = totalBelanja - Diskon;
-
-  print("Barang         : $namaBarang");
-  print("Harga/pcs      : ${formatRupiah.format(hargaSatuan)}");
-  print("Jumlah Beli    : $jumlahBeli pcs");
-  print("----------------------------------");
-  print("Total Awal     : ${formatRupiah.format(totalBelanja)}");
-  print("Diskon (${persenPotongan.toInt()}%)   : -${formatRupiah.format(Diskon)}");
-  print("----------------------------------");
-  print("HARGA AKHIR    : ${formatRupiah.format(hargaAkhir)}");
-  print("==================================");
+  bukutulis.Tampilkan();
+  pensil.Tampilkan();
+  penghapus.Tampilkan();
 }
-
-// Jika kelak aturan atau rumus potongan diubah (misal dari persentase menjadi potongan nominal tetap), 
-// Bagian yang cukup diubah sekali hanyalah rumus di dalam blok fungsi 'hitungDiskon', 
-// dan seluruh kalkulasi transaksi di dalam sistem akan otomatis mengikuti pembaruan aturan tersebut.
