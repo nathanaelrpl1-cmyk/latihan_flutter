@@ -36,17 +36,29 @@ class Barang {
   // }
 }
 
+class Pembeli {
+  String nama;
+  bool statusanggota;
+
+  Pembeli({
+    required this.nama,
+    required this.statusanggota,
+  });
+}
+
 void main() {
   final formatRupiah = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp',
       decimalDigits: 2,
     );
-  print('==== DAFTAR BARANG KOPERASI ====');
+  print('==== Transaksi Koperasi ====');
 
   Barang bukutulis = Barang(nama: 'Buku Tulis', harga: 3000.0, stok: 100);
+  Pembeli siswa1 = Pembeli(nama: "Budi", statusanggota: true);  
+  Pembeli siswa2 = Pembeli(nama: "Andi", statusanggota: false);
 
-  int Jumlahpermintaan = 110;
+  int Jumlahpermintaan = 80;
 
   print("=== CEK KETERSEDIAAN BARANG ===");
   print("Barang       : ${bukutulis.nama}");
@@ -55,12 +67,20 @@ void main() {
   print("-------------------------------");
 
   if (bukutulis.bisaDijual(Jumlahpermintaan)) {
-    print("Status       : BISA DIJUAL. Melanjutkan ke pembayaran...");
+    double totalHarga = bukutulis.harga * Jumlahpermintaan;
+    if (siswa1.statusanggota) {
+      print("Status: ANGGOTA (Mendapat diskon 10%)");
+      totalHarga = totalHarga - (totalHarga * 10 / 100);
+    } else {
+      print("Status: UMUM (Tidak mendapat diskon)");
+    }
+
     bukutulis.kurangiStok(Jumlahpermintaan);
-  } else {
-    print("Status       : DITOLAK. Stok tidak mencukupi!");
+
+    print("Barang dibeli : ${bukutulis.nama} ($Jumlahpermintaan pcs)");
+    print("Total Bayar   : Rp${formatRupiah.format(totalHarga)}");
   }
-  print("===============================\n");
+  print("===================================");
   
   // List<Barang> daftarBarang = [bukutulis, pensil, penghapus];
 
