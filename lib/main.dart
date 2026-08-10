@@ -10,18 +10,30 @@ class Barang {
     required this.stok,
   });
 
-  double nilaiStok() {
-    return harga * stok;
+  // double nilaiStok() {
+  //   return harga * stok;
+  // }
+
+  bool bisaDijual(int diminta) {
+    if (diminta <= stok) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  void Tampilkan() {
-    final formatRupiah = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp',
-      decimalDigits: 2,
-    );
-    print("- $nama (Stok: $stok) -> Nilai Aset: ${formatRupiah.format(nilaiStok())}");
+  void kurangiStok(int diminta) {
+    stok -= diminta;
   }
+
+  // void Tampilkan() {
+  //   final formatRupiah = NumberFormat.currency(
+  //     locale: 'id_ID',
+  //     symbol: 'Rp',
+  //     decimalDigits: 2,
+  //   );
+  //   print("- $nama (Stok: $stok) -> Nilai Aset: ${formatRupiah.format(nilaiStok())}");
+  // }
 }
 
 void main() {
@@ -33,19 +45,33 @@ void main() {
   print('==== DAFTAR BARANG KOPERASI ====');
 
   Barang bukutulis = Barang(nama: 'Buku Tulis', harga: 3000.0, stok: 100);
-  Barang pensil = Barang(nama: 'Pensil', harga: 1500.0, stok: 50);
-  Barang penghapus = Barang(nama: 'Penghapus', harga: 1000.0, stok: 30);
-  
-  List<Barang> daftarBarang = [bukutulis, pensil, penghapus];
 
-  double TotalKeseluruhan = 0.0;
+  int Jumlahpermintaan = 110;
 
-  for (int i = 0; i <daftarBarang.length; i++) {
-    daftarBarang[i].Tampilkan();
+  print("=== CEK KETERSEDIAAN BARANG ===");
+  print("Barang       : ${bukutulis.nama}");
+  print("Sisa Stok    : ${bukutulis.stok} pcs");
+  print("Jumlah Beli  : ${Jumlahpermintaan} pcs");
+  print("-------------------------------");
 
-    TotalKeseluruhan += daftarBarang[i].nilaiStok();
+  if (bukutulis.bisaDijual(Jumlahpermintaan)) {
+    print("Status       : BISA DIJUAL. Melanjutkan ke pembayaran...");
+    bukutulis.kurangiStok(Jumlahpermintaan);
+  } else {
+    print("Status       : DITOLAK. Stok tidak mencukupi!");
   }
-  print('Total Nilai Aset: ${formatRupiah.format(TotalKeseluruhan)}');
+  print("===============================\n");
+  
+  // List<Barang> daftarBarang = [bukutulis, pensil, penghapus];
+
+  // double TotalKeseluruhan = 0.0;
+
+  // for (int i = 0; i <daftarBarang.length; i++) {
+  //   daftarBarang[i].Tampilkan();
+
+  //   TotalKeseluruhan += daftarBarang[i].nilaiStok();
+  // }
+  // print('Total Nilai Aset: ${formatRupiah.format(TotalKeseluruhan)}');
 }
 
 // Menyimpan objek ke dalam List<Barang> lalu menampilkannya dengan perulangan jauh lebih baik karena 
