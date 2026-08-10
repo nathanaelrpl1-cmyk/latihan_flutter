@@ -31,8 +31,18 @@ void main() {
   Barang bukutulis = Barang(nama: 'Buku Tulis', harga: 3000.0, stok: 100);
   Barang pensil = Barang(nama: 'Pensil', harga: 1500.0, stok: 50);
   Barang penghapus = Barang(nama: 'Penghapus', harga: 1000.0, stok: 30);
+  
+  List<Barang> daftarBarang = [bukutulis, pensil, penghapus];
 
-  bukutulis.Tampilkan();
-  pensil.Tampilkan();
-  penghapus.Tampilkan();
+  for (int i = 0; i <daftarBarang.length; i++) {
+    daftarBarang[i].Tampilkan();
+  }
 }
+
+// Menyimpan objek ke dalam List<Barang> lalu menampilkannya dengan perulangan jauh lebih baik karena 
+// membuat program sangat fleksibel dan otomatis saat jumlah data bertambah banyak. Jika tanpa perulangan 
+// akan membuat harus memanggil perintah tampilkan() satu per satu secara manual untuk setiap barang, dengan
+// cara ini hanya cukup menulis satu blok perulangan saja. Bayangkan jika nantinya koperasi memiliki ratusan jenis
+// barang, jadi tidak perlu repot mengetik ratusan baris kode baru, karena perulangan akan otomatis mendata 
+// dan mencetak seluruh isi daftar tersebut secara cepat tanpa ada satupun yang terlewat.
+
