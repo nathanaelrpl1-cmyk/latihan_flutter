@@ -10,22 +10,26 @@ class Barang {
     required this.stok,
   });
 
+  double nilaiStok() {
+    return harga * stok;
+  }
+
   void Tampilkan() {
     final formatRupiah = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp',
       decimalDigits: 2,
     );
-
-    print('=== BARANG KOPERASI ===');
-    print('Nama Barang: $nama');
-    print('harga: ${formatRupiah.format(harga)}');
-    print('Stok: $stok');
-    print('=======================');
+    print("- $nama (Stok: $stok) -> Nilai Aset: ${formatRupiah.format(nilaiStok())}");
   }
 }
 
 void main() {
+  final formatRupiah = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp',
+      decimalDigits: 2,
+    );
   print('==== DAFTAR BARANG KOPERASI ====');
 
   Barang bukutulis = Barang(nama: 'Buku Tulis', harga: 3000.0, stok: 100);
@@ -34,9 +38,14 @@ void main() {
   
   List<Barang> daftarBarang = [bukutulis, pensil, penghapus];
 
+  double TotalKeseluruhan = 0.0;
+
   for (int i = 0; i <daftarBarang.length; i++) {
     daftarBarang[i].Tampilkan();
+
+    TotalKeseluruhan += daftarBarang[i].nilaiStok();
   }
+  print('Total Nilai Aset: ${formatRupiah.format(TotalKeseluruhan)}');
 }
 
 // Menyimpan objek ke dalam List<Barang> lalu menampilkannya dengan perulangan jauh lebih baik karena 
@@ -53,3 +62,10 @@ void main() {
 // atau method "cek kelayakan"), kita hanya perlu menambahkannya di dalam struktur 
 // Kelas 'Barang' satu kali saja tanpa harus membongkar dan merombak seluruh 
 // logika transaksi di program utama.
+// --------------------------------------------------------------------------------------------------------
+// JAWABAN ANALISA: 
+// Untuk apa angka nilaiStok() ini berguna bagi laporan aset koperasi?
+// Angka ini sangat berguna karena menunjukkan total uang/modal dalam bentuk barang  
+// fisik. Pengurus koperasi wajib mengetahui angka ini untuk 
+// menghitung kekayaan (aset) bersih koperasi saat ini, memantau perputaran modal, dan 
+// sebagai data utama untuk pembukuan atau keuangan (neraca) di akhir bulan/tahun.
