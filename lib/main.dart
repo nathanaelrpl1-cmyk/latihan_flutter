@@ -1,117 +1,84 @@
 import 'package:intl/intl.dart';
+
 class Barang {
+  final formatRupiah = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp',
+    decimalDigits: 2,
+  ); 
+
   String nama;
   double harga;
-  int stok;
+  int _stok;
 
-  Barang ({
-    required this.nama,
-    required this.harga,
-    required this.stok,
-  });
+  Barang(this.nama, this.harga, this._stok);
 
-  // double nilaiStok() {
-  //   return harga * stok;
-  // }
+  int get stok => _stok;
 
-  bool bisaDijual(int diminta) {
-    if (diminta <= stok) {
+  bool jual(int n) {
+    if (n > 0 && _stok >= n) {
+      _stok -= n;
       return true;
     } else {
+      print("Stok tidak mencukupi atau jumlah yang diminta tidak valid.");
       return false;
     }
   }
 
-  void kurangiStok(int diminta) {
-    stok -= diminta;
+  void tampilkan() {
+    print("- $nama: ${formatRupiah.format(harga)} (Stok: $_stok)");
   }
-
-  // void Tampilkan() {
-  //   final formatRupiah = NumberFormat.currency(
-  //     locale: 'id_ID',
-  //     symbol: 'Rp',
-  //     decimalDigits: 2,
-  //   );
-  //   print("- $nama (Stok: $stok) -> Nilai Aset: ${formatRupiah.format(nilaiStok())}");
-  // }
 }
 
-class Pembeli {
-  String nama;
-  bool statusanggota;
+class BarangPromo extends Barang {
+  final formatRupiah = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp',
+    decimalDigits: 2,
+  );
 
-  Pembeli({
-    required this.nama,
-    required this.statusanggota,
-  });
+  double Diskon;
+
+  BarangPromo(String nama, double harga, int stok, this.Diskon) 
+      : super(nama, harga, stok);
+
+  double HargaPromo() {
+    return harga - (harga * Diskon / 100);
+  }
 }
 
 void main() {
   final formatRupiah = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp',
-      decimalDigits: 2,
-    );
-  print('==== Transaksi Koperasi ====');
+    locale: 'id_ID',
+    symbol: 'Rp',
+    decimalDigits: 2,
+  );
 
-  Barang bukutulis = Barang(nama: 'Buku Tulis', harga: 3000.0, stok: 100);
-  Pembeli siswa1 = Pembeli(nama: "Budi", statusanggota: true);  
-  Pembeli siswa2 = Pembeli(nama: "Andi", statusanggota: false);
+  BarangPromo Buku = BarangPromo("Buku", 50000.0, 20, 10.0);
 
-  int Jumlahpermintaan = 80;
-
-  print("=== CEK KETERSEDIAAN BARANG ===");
-  print("Barang       : ${bukutulis.nama}");
-  print("Sisa Stok    : ${bukutulis.stok} pcs");
-  print("Jumlah Beli  : ${Jumlahpermintaan} pcs");
-  print("-------------------------------");
-
-  if (bukutulis.bisaDijual(Jumlahpermintaan)) {
-    double totalHarga = bukutulis.harga * Jumlahpermintaan;
-    if (siswa1.statusanggota) {
-      print("Status: ANGGOTA (Mendapat diskon 10%)");
-      totalHarga = totalHarga - (totalHarga * 10 / 100);
-    } else {
-      print("Status: UMUM (Tidak mendapat diskon)");
-    }
-
-    bukutulis.kurangiStok(Jumlahpermintaan);
-
-    print("Barang dibeli : ${bukutulis.nama} ($Jumlahpermintaan pcs)");
-    print("Total Bayar   : Rp${formatRupiah.format(totalHarga)}");
-  }
-  print("===================================");
+  int jumlahbeli = 15;
   
-  // List<Barang> daftarBarang = [bukutulis, pensil, penghapus];
+  print("=== Struk Belanja ===\n");
+  print("Nama Barang : ${Buku.nama}");
+  print("Stok Barang : ${Buku.stok}");
+  if (Buku.jual(jumlahbeli)) {
+    print("Harga Asli  : Rp${Buku.harga}");
+    print("Diskon      : ${Buku.Diskon}%");
+    print("------------------------------");
+    print("jumlah beli : $jumlahbeli");
+    print("Sisa stok  : ${Buku.stok}");
+    print("HARGA PROMO : Rp${Buku.HargaPromo()}");  
 
-  // double TotalKeseluruhan = 0.0;
-
-  // for (int i = 0; i <daftarBarang.length; i++) {
-  //   daftarBarang[i].Tampilkan();
-
-  //   TotalKeseluruhan += daftarBarang[i].nilaiStok();
-  // }
-  // print('Total Nilai Aset: ${formatRupiah.format(TotalKeseluruhan)}');
+    double totalHarga = Buku.HargaPromo() * jumlahbeli;
+    print("Total Harga : ${formatRupiah.format(totalHarga)}");
+  }
+  print("==============================");
 }
 
-// Menyimpan objek ke dalam List<Barang> lalu menampilkannya dengan perulangan jauh lebih baik karena 
-// membuat program sangat fleksibel dan otomatis saat jumlah data bertambah banyak. Jika tanpa perulangan 
-// akan membuat harus memanggil perintah tampilkan() satu per satu secara manual untuk setiap barang, dengan
-// cara ini hanya cukup menulis satu blok perulangan saja. Bayangkan jika nantinya koperasi memiliki ratusan jenis
-// barang, jadi tidak perlu repot mengetik ratusan baris kode baru, karena perulangan akan otomatis mendata 
-// dan mencetak seluruh isi daftar tersebut secara cepat tanpa ada satupun yang terlewat.
-// --------------------------------------------------------------------------------------------------------
-// Apa keuntungan memodelkan barang sebagai objek bagi pengembangan sistem 
-// koperasi ke depan?
-// Memodelkan barang sebagai objek membuat sistem jauh lebih mudah dikembangkan. Jika di suatu saat 
-// koperasi ingin menambahkan detail baru (misalnya atribut "tanggal kedaluwarsa", "kategori", 
-// atau method "cek kelayakan"), kita hanya perlu menambahkannya di dalam struktur 
-// Kelas 'Barang' satu kali saja tanpa harus membongkar dan merombak seluruh 
-// logika transaksi di program utama.
-// --------------------------------------------------------------------------------------------------------
-// JAWABAN ANALISA: 
-// Untuk apa angka nilaiStok() ini berguna bagi laporan aset koperasi?
-// Angka ini sangat berguna karena menunjukkan total uang/modal dalam bentuk barang  
-// fisik. Pengurus koperasi wajib mengetahui angka ini untuk 
-// menghitung kekayaan (aset) bersih koperasi saat ini, memantau perputaran modal, dan 
-// sebagai data utama untuk pembukuan atau keuangan (neraca) di akhir bulan/tahun.
+// Karena untuk mencegah manipulasi data secara langsung dari luar kelas. Jika stok 
+// tidak dilindungi, programmer lain bisa saja tidak sengaja ataupun dengan sengaja 
+// mengetik kode seperti `buku._stok = -50;` tanpa lewat proses transaksi. 
+// Akibatnya, data di aplikasi menjadi kacau dan tidak sesuai dengan barang
+// yang ada di gudang. Dengan melindunginya, kita memaksa setiap perubahan stok 
+// harus melewati sebuah transaksi yang sudah dilengkapi dengan aturan validasi,
+// sehingga data tetap aman.
