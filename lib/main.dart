@@ -1,14 +1,38 @@
-import 'dart:async';
+// 1. Tipe Data & Kontrol Alur: Menjamin akurasi hitungan uang dan 
+//    mengotomatisasi penentuan diskon atau poin secara presisi.
+// 2. OOP (Class/Objek): Membungkus data 'Barang' dan 'Pembeli' secara 
+//    terstruktur, serta melindungi stok dari perubahan ilegal (enkapsulasi).
+// 3. Modularitas (Fungsi): Memecah logika kompleks (seperti transaksi) 
+//    ke fungsi terpisah agar mudah diperbarui di kemudian hari.
+// 4. Error Handling (Try-Catch): Menghindari 'human error' (salah ketik) 
+//    agar aplikasi tidak mati mendadak (crash) di tengah antrean.
+// 5. Asinkron (Async/Await): Memastikan antarmuka kasir tidak crash
+//    saat sistem sedang menarik atau menyimpan data ke server.
+
 import 'package:intl/intl.dart';
 
 class Pembeli {
   String nama;
   bool isAnggota;
+  int poin; 
 
   Pembeli({
     required this.nama,
     required this.isAnggota,
+    this.poin = 0, 
   });
+
+  void tambahPoin(double totalBelanja) {
+    if (isAnggota) {
+      int poinDidapat = (totalBelanja / 10000).floor(); 
+      
+      if (poinDidapat > 0) {
+        poin += poinDidapat;
+        print("REWARD ANGGOTA: Mendapat $poinDidapat poin!");
+        print("Total Poin '$nama' saat ini: $poin poin.");
+      }
+    }
+  }
 }
 
 class Barang {
@@ -16,109 +40,50 @@ class Barang {
   double harga;
   int _stok; 
 
-  Barang({
-    required this.nama,
-    required this.harga,
-    required this._stok,
-  });
-
+  Barang(this.nama, this.harga, int stok) : _stok = stok;
   int get stok => _stok;
 
   void jual(int n) {
-    if (n <= 0) {
-      throw Exception("Jumlah pembelian harus lebih dari 0!");
-    }
-    if (n > _stok) {
-      throw Exception("Stok '$nama' tidak mencukupi! Sisa stok hanya $_stok unit.");
-    }
+    if (n > _stok) throw Exception("Stok tidak cukup!");
     _stok -= n;
   }
 }
 
-Future<void> memuat() async {
-  print("Sedang memuat ...");
-  await Future.delayed(Duration(seconds: 3));
-  print("Sistem siap!\n");
-}
-
-Future<void> simpanLaporan() async {
-  print("\nMenyimpan laporan transaksi ...");
-  await Future.delayed(Duration(seconds: 2));
-  print("Laporan siap! Data berhasil disimpan. Terimakasih!");
-}
-
-void prosesTransaksi(String inputJumlah, Barang barang, Pembeli pembeli) {
-  final formatRupiah = NumberFormat.currency(
-    locale: 'id_ID', 
-    symbol: 'Rp', 
-    decimalDigits: 0
-  );
+void prosesTransaksi(Barang barang, int jumlah, Pembeli pembeli) {
+  final formatRupiah = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
   
-  print("\n--- Kasir memproses pesanan: ${pembeli.nama} ---");
-  print("Input jumlah barang: '$inputJumlah' untuk ${barang.nama}");
-
+  print("\n--- Transaksi: ${pembeli.nama} ---");
+  
   try {
-    int jumlah = int.parse(inputJumlah);
-
     barang.jual(jumlah);
-
     double totalHarga = barang.harga * jumlah;
     double diskon = 0.0;
 
     if (pembeli.isAnggota) {
-      diskon = totalHarga * 0.10;
-      print("Status: ANGGOTA (Mendapat diskon 10%)");
-    } else {
-      print("Status: UMUM (Tidak mendapat diskon)");
+      diskon = totalHarga * 0.10; 
     }
-
+    
     double totalBayar = totalHarga - diskon;
+    
+    print("Membeli       : $jumlah x ${barang.nama}");
+    print("Total Tagihan : ${formatRupiah.format(totalBayar)}");
 
-    print("TRANSAKSI SUKSES!");
-    print("Rincian Pembelian  : $jumlah x ${formatRupiah.format(barang.harga)}");
-    print("Total Awal         : ${formatRupiah.format(totalHarga)}");
-    print("Potongan           : -${formatRupiah.format(diskon)}");
-    print("Sisa Stok          : ${barang.stok}");
-    print("Total Tagihan      : ${formatRupiah.format(totalBayar)}");
+    pembeli.tambahPoin(totalBayar);
 
-  } on FormatException catch (_) {
-    print("Kesalahan Ketik: '$inputJumlah' bukan angka yang valid. Harap masukkan angka (contoh: 2)");
-  } catch (error) {
-    String pesanError = error.toString().replaceAll("Exception: ", "");
-    print("Kesalahan Transaksi: $pesanError");
-  } finally {
-    print("Sistem: Transaksi dicatat di log.");
+  } catch (e) {
+    print("Galat: $e");
   }
 }
 
-// 5. ALUR PROGRAM UTAMA (Main)
-void main() async {
-  final formatRupiah = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+void main() {
+  print("=== UJI COBA FITUR POIN BRANTAS MART ===");
+
+  Barang seragam = Barang("Seragam Sekolah", 150000.0, 10);
   
-  print("=== SISTEM KASIR BRANTAS MART ===\n");
+  Pembeli siswaMember = Pembeli(nama: "Budi (Anggota)", isAnggota: true, poin: 5); 
+  Pembeli siswaUmum = Pembeli(nama: "Andi (Umum)", isAnggota: false);
 
-  await memuat();
+  prosesTransaksi(seragam, 1, siswaMember);
 
-  List<Barang> daftarBarang = [
-    Barang(nama: 'Buku Tulis', harga: 5000.0, stok: 20),
-    Barang(nama: 'Pensil', harga: 2000.0, stok: 15),
-    Barang(nama: 'Penghapus', harga: 1500.0, stok: 50),
-  ];
-
-  Pembeli pelanggan1 = Pembeli(nama: "Budi", isAnggota: true);
-  Pembeli pelanggan2 = Pembeli(nama: "Andi", isAnggota: false);
-
-  print("--- KATALOG BARANG HARI INI ---");
-  for (int i = 0; i < daftarBarang.length; i++) {
-    print("${i + 1}. ${daftarBarang[i].nama} - ${formatRupiah.format(daftarBarang[i].harga)} (Stok: ${daftarBarang[i].stok})");
-  }
-
-  prosesTransaksi("2", daftarBarang[0], pelanggan1);
-
-  prosesTransaksi("tiga", daftarBarang[1], pelanggan2);
-
-  prosesTransaksi("100", daftarBarang[2], pelanggan2);
-
-  await simpanLaporan();
-  print("Semua proses telah selesai. Terimakasih!");
+  prosesTransaksi(seragam, 1, siswaUmum);
 }
